@@ -29,3 +29,5 @@
 (setq custom-file (locate-user-emacs-file "custom-vars.el"))
 ;; Now load it
 (load custom-file 'noerror 'nomessage)
+;; Refresh Dired
+(setq global-auto-revert-non-file-buffers t)
