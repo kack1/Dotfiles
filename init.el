@@ -18,9 +18,11 @@
 ;; Modus theme
 (setq modus-themes-mode-line '(accented borderless)
       modus-themes-region '(bg-only)
-      modus-themes-completions 'minimal
       modus-themes-bold-constructs t
       modus-themes-italic-constructs t
+      modus-themes-completions '((matches . (extrabold))
+                                 (selection . (semibold accented))
+                                 (popup . (accented intense)))
       modus-themes-paren-match '(bold intense)
       modus-themes-headings
       '((1 . (rainbow overlone background 1.4))
@@ -68,7 +70,7 @@
 
 ;; Initalize use-package on non-Linux platforms
 (unless (package-installed-p 'use-package)
-  (package-install 'use-pack>age))
+  (package-install 'use-package))
 
 (require 'use-package)
 (setq use-package-always-ensure t)
@@ -164,10 +166,6 @@
   :config
   (evil-collection-init))
 
-(use-package doom-modeline
-  :init (doom-modeline-mode 1)
-  :custom ((doom-modeline-height 15)))
-
 (use-package all-the-icons
   :if (display-graphic-p)
   :commands all-the-icons-install-fonts
@@ -204,3 +202,6 @@
   :after magit)
 
 (setq auth-sources '("~/.authinfo"))
+(set-face-attribute 'default nil :font "JetBrains Mono-17")
+(set-face-attribute 'mode-line nil :font "JetBrains Mono-15")
+       
