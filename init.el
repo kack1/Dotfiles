@@ -13,9 +13,19 @@
 (setq display-line-numbers 'relative)
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+(add-to-list 'image-types 'svg)
 
+(use-package doom-themes
+  :config
+  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+        doom-themes-enable-italic t)
+  (load-theme 'doom-dracula t)
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+  (doom-themes-org-config))
 
 ;; Modus theme
+<<<<<<< HEAD
 (setq modus-themes-mode-line '(accented borderless)
       modus-themes-region '(bg-only)
       modus-themes-bold-constructs t
@@ -30,8 +40,22 @@
 	(3 . (rainbow bold 1.2))
 	(t . (semilight 1.1)))
       modus-themes-org-blocks 'tinted-background)
+=======
+;;(setq modus-themes-mode-line '(accented borderless)
+      ;;modus-themes-region '(bg-only)
+      ;;modus-themes-completions 'minimal
+      ;;modus-themes-bold-constructs t
+      ;;modus-themes-italic-constructs t
+      ;;modus-themes-paren-match '(bold intense)
+      ;;modus-themes-headings
+      ;;'((1 . (rainbow overlone background 1.4))
+	;;(2 . (rainbow background 1.3))
+	;;(3 . (rainbow bold 1.2))
+	;;(t . (semilight 1.1)))
+      ;;modus-themes-org-blocks 'tinted-background)
+>>>>>>> 1c99a5a (The start of LSP!)
 ;;load theme
-(load-theme 'modus-vivendi t)
+;;(load-theme 'modus-vivendi t)
 ;; Highlight Current Line
 (hl-line-mode 1)
 ;; Stops cursor blinking
@@ -170,7 +194,8 @@
   :if (display-graphic-p)
   :commands all-the-icons-install-fonts
   :init
-  (unless (find-font (font-spec :name "all-the-icons"))
+  (unless (find-font (font-spec :name "all-the-icons")
+)
     (all-the-icons-install-fonts t)))
 
 (use-package all-the-icons-dired
@@ -202,6 +227,68 @@
   :after magit)
 
 (setq auth-sources '("~/.authinfo"))
+<<<<<<< HEAD
 (set-face-attribute 'default nil :font "JetBrains Mono-17")
 (set-face-attribute 'mode-line nil :font "JetBrains Mono-15")
        
+=======
+
+(use-package org
+  :config
+  (setq org-ellipsis " ▾"))
+
+(use-package org-bullets
+  :hook (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+(defun efs/org-mode-visual-fill ()
+  (setq visual-fill-column-width 100
+        visual-fill-column-center-text t)
+  (visual-fill-column-mode 1))
+
+(use-package visual-fill-column
+  :hook (org-mode . efs/org-mode-visual-fill))
+
+(defun efs/lsp-mode-setup ()
+  (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+  (lsp-headerline-breadcrumb-mode))
+
+(use-package lsp-mode
+  :commands (lsp lsp-deferred)
+  ;;:hook (lsp-mode . efs/lsp-mode-setup)
+  :init
+  (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
+  :config
+  (lsp-enable-which-key-integration t))
+
+(use-package python-mode
+  :ensure t
+  :hook (python-mode . lsp-deferred))
+
+(use-package pyvenv
+  :after python-mode
+  :config
+  (pyvenv-mode 1))
+; add below line to init.el
+(use-package company
+  :after lsp-mode
+  :hook (lsp-mode . company-mode)
+  :bind (:map company-active-map
+         ("<tab>" . company-complete-selection))
+        (:map lsp-mode-map
+         ("<tab>" . company-indent-or-complete-common))
+  :custom
+  (company-minimum-prefix-length 1)
+  (company-idle-delay 0.0))
+
+(use-package company-box
+  :hook (company-mode . company-box-mode))
+
+(use-package lsp-ui
+  :hook (lsp-mode . lsp-ui-mode)
+  :custom
+  (lsp-ui-doc-position 'bottom))
+
+(use-package lsp-ivy)
+>>>>>>> 1c99a5a (The start of LSP!)
