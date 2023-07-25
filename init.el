@@ -25,22 +25,7 @@
   (doom-themes-org-config))
 
 ;; Modus theme
-<<<<<<< HEAD
-(setq modus-themes-mode-line '(accented borderless)
-      modus-themes-region '(bg-only)
-      modus-themes-bold-constructs t
-      modus-themes-italic-constructs t
-      modus-themes-completions '((matches . (extrabold))
-                                 (selection . (semibold accented))
-                                 (popup . (accented intense)))
-      modus-themes-paren-match '(bold intense)
-      modus-themes-headings
-      '((1 . (rainbow overlone background 1.4))
-	(2 . (rainbow background 1.3))
-	(3 . (rainbow bold 1.2))
-	(t . (semilight 1.1)))
-      modus-themes-org-blocks 'tinted-background)
-=======
+
 ;;(setq modus-themes-mode-line '(accented borderless)
       ;;modus-themes-region '(bg-only)
       ;;modus-themes-completions 'minimal
@@ -53,7 +38,7 @@
 	;;(3 . (rainbow bold 1.2))
 	;;(t . (semilight 1.1)))
       ;;modus-themes-org-blocks 'tinted-background)
->>>>>>> 1c99a5a (The start of LSP!)
+
 ;;load theme
 ;;(load-theme 'modus-vivendi t)
 ;; Highlight Current Line
@@ -227,11 +212,11 @@
   :after magit)
 
 (setq auth-sources '("~/.authinfo"))
-<<<<<<< HEAD
+
 (set-face-attribute 'default nil :font "JetBrains Mono-17")
 (set-face-attribute 'mode-line nil :font "JetBrains Mono-15")
        
-=======
+
 
 (use-package org
   :config
@@ -291,4 +276,4 @@
   (lsp-ui-doc-position 'bottom))
 
 (use-package lsp-ivy)
->>>>>>> 1c99a5a (The start of LSP!)
+
