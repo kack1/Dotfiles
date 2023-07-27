@@ -24,6 +24,10 @@
   (doom-themes-visual-bell-config)
   (doom-themes-org-config))
 
+(use-package doom-modeline
+  :config
+  (doom-modeline-mode 1))
+
 ;; Modus theme
 
 ;;(setq modus-themes-mode-line '(accented borderless)
