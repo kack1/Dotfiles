@@ -155,6 +155,7 @@
   (ka/leader-keys
     "." '(lambda () (interactive) (counsel-find-file))
     "b" '(lambda () (interactive) (ibuffer))
+    "fs" '(lambda () (interactive) (save-buffer))
     "t"  '(:ignore t :which-key "toggles")
     "tt" '(counsel-load-theme :which-key "choose theme")
     "fde" '(lambda () (interactive) (find-file (expand-file-name "~/.emacs.d/Emacs.org")))))
