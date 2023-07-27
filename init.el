@@ -149,6 +149,8 @@
     :global-prefix "C-SPC")
 
   (ka/leader-keys
+    "." '(lambda () (interactive) (counsel-find-file))
+    "b" '(lambda () (interactive) (ibuffer))
     "t"  '(:ignore t :which-key "toggles")
     "tt" '(counsel-load-theme :which-key "choose theme")
     "fde" '(lambda () (interactive) (find-file (expand-file-name "~/.emacs.d/Emacs.org")))))
