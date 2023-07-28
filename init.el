@@ -147,15 +147,18 @@
 (use-package general
    :after evil
   :config
+  (general-auto-unbind-keys)
   (general-create-definer ka/leader-keys
     :keymaps '(normal insert visual emacs)
     :prefix "SPC"
     :global-prefix "C-SPC")
 
   (ka/leader-keys
-    "." '(lambda () (interactive) (counsel-find-file))
-    "b" '(lambda () (interactive) (ibuffer))
-    "fs" '(lambda () (interactive) (save-buffer))
+    "." 'counsel-find-file
+    "b" '(:ignore t :which-key "Buffers")
+    "bi" 'ibuffer
+    "bk" 'kill-buffer
+    "fs" 'save-buffer
     "t"  '(:ignore t :which-key "toggles")
     "tt" '(counsel-load-theme :which-key "choose theme")
     "fde" '(lambda () (interactive) (find-file (expand-file-name "~/.emacs.d/Emacs.org")))))
