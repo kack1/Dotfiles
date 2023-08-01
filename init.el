@@ -15,6 +15,9 @@
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 (add-to-list 'image-types 'svg)
 
+(set-face-attribute 'default nil :font "JetBrains Mono-17")
+(set-face-attribute 'mode-line nil :font "JetBrains Mono-15")
+
 (use-package doom-themes
   :config
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
@@ -223,10 +226,10 @@
 
 (setq auth-sources '("~/.authinfo"))
 
-(set-face-attribute 'default nil :font "JetBrains Mono-17")
-(set-face-attribute 'mode-line nil :font "JetBrains Mono-15")
        
-
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
 
 (use-package org
   :config
@@ -289,3 +292,39 @@
 
 (use-package ement)
 
+(use-package python-black
+  :demand t
+  :after python
+  :hook (python-mode . python-black-on-save-mode-enable-dwim))
+
+(use-package yasnippet-snippets)
+(add-to-list 'load-path
+              "~/.emacs.d/plugins/yasnippet")
+(require 'yasnippet)
+(yas-global-mode 1)
+
+
+;; Nix
+(use-package nix-mode
+  :mode "\\.nix\\'")
+
+(use-package cmake-ide)
+(use-package rtags)
+(require 'rtags) ;; optional, must have rtags installed
+(cmake-ide-setup)
+
+(use-package direnv
+ :config
+ (direnv-mode))
+
+(use-package irony
+  :config
+    (add-hook 'c++-mode-hook 'irony-mode)
+    (add-hook 'c-mode-hook 'irony-mode)
+    (add-hook 'objc-mode-hook 'irony-mode)
+    (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+
+(use-package flycheck-irony
+  :config
+  (eval-after-load 'flycheck
+  '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup)))
