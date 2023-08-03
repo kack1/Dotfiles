@@ -18,19 +18,6 @@
 (set-face-attribute 'default nil :font "JetBrains Mono-17")
 (set-face-attribute 'mode-line nil :font "JetBrains Mono-15")
 
-(use-package doom-themes
-  :config
-  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-        doom-themes-enable-italic t)
-  (load-theme 'doom-dracula t)
-  ;; Enable flashing mode-line on errors
-  (doom-themes-visual-bell-config)
-  (doom-themes-org-config))
-
-(use-package doom-modeline
-  :config
-  (doom-modeline-mode 1))
-
 ;; Modus theme
 
 ;;(setq modus-themes-mode-line '(accented borderless)
@@ -91,6 +78,18 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
+(use-package doom-themes
+  :config
+  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+        doom-themes-enable-italic t)
+  (load-theme 'doom-dracula t)
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+  (doom-themes-org-config))
+
+(use-package doom-modeline
+  :config
+  (doom-modeline-mode 1))
 
 ;; Rainbow Delimiters
 (use-package rainbow-delimiters
