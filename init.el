@@ -15,8 +15,6 @@
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 (add-to-list 'image-types 'svg)
 
-(set-face-attribute 'default nil :font "JetBrains Mono-17")
-(set-face-attribute 'mode-line nil :font "JetBrains Mono-15")
 
 ;; Modus theme
 
@@ -85,7 +83,9 @@
   (load-theme 'doom-dracula t)
   ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
-  (doom-themes-org-config))
+  (doom-themes-org-config)
+(set-face-attribute 'default nil :font "JetBrains Mono-17")
+(set-face-attribute 'mode-line nil :font "JetBrains Mono-15"))
 
 (use-package doom-modeline
   :config
@@ -327,3 +327,7 @@
   :config
   (eval-after-load 'flycheck
   '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup)))
+
+(use-package auctex)
+(use-package evil-tex)
+
