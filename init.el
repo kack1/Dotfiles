@@ -16,25 +16,6 @@
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 (add-to-list 'image-types 'svg)
 
-
-;; Modus theme
-
-;;(setq modus-themes-mode-line '(accented borderless)
-      ;;modus-themes-region '(bg-only)
-      ;;modus-themes-completions 'minimal
-      ;;modus-themes-bold-constructs t
-      ;;modus-themes-italic-constructs t
-      ;;modus-themes-paren-match '(bold intense)
-      ;;modus-themes-headings
-      ;;'((1 . (rainbow overlone background 1.4))
-	;;(2 . (rainbow background 1.3))
-	;;(3 . (rainbow bold 1.2))
-	;;(t . (semilight 1.1)))
-      ;;modus-themes-org-blocks 'tinted-background)
-
-;;load theme
-;;(load-theme 'modus-vivendi t)
-;; Highlight Current Line
 (hl-line-mode 1)
 ;; Stops cursor blinking
 (blink-cursor-mode -1)
@@ -101,6 +82,7 @@
   :diminish which-key-mode
   :config
   (setq which-key-idle-delay 1.0))
+
 (use-package vertico
   :ensure t
   :custom
@@ -138,10 +120,8 @@
    (corfu-auto t)                 ;; Enable auto completion
    (corfu-auto-delay 0)
    (corfu-auto-prefix 1)
-
-    (completion-styles '(orderless-fast basic))
-  ;; (corfu-separator ?\s)          ;; Orderless field separator
-  ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
+   (corfu-separator ?\s)          ;; Orderless field separator
+   (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
   ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
   ;; (corfu-preview-current nil)    ;; Disable current candidate preview
   ;; (corfu-preselect 'prompt)      ;; Preselect the prompt
@@ -158,6 +138,7 @@
   ;; See also `corfu-exclude-modes'.
   :init
   (global-corfu-mode))
+
 (defun orderless-fast-dispatch (word index total)
   (and (= index 0) (= total 1) (length< word 4)
        `(orderless-regexp . ,(concat "^" (regexp-quote word)))))
@@ -179,21 +160,39 @@
   ;; `completion-at-point' is often bound to M-TAB.
   (setq tab-always-indent 'complete))
 
-(use-package counsel
- :bind (("M-x" . counsel-M-x)
-	 ("C-x b" . counsel-ibuffer)
-	 ("C-x C-f" . counsel-find-file)
-	 :map minibuffer-local-map
-	 ("C-r" . 'counsel-minibuffer-history)))
+;; Example configuration for Consult
+(use-package consult
+  ;; Replace bindings. Lazily loaded due by `use-package'.
+  :bind (;; C-c bindings in `mode-specific-map'
+	 ("C-s" . consult-line)
+         ("C-M-l" . consult-imenu)
+         ("C-M-j" . persp-switch-to-buffer*)
+         :map minibuffer-local-map
+         ("C-r" . consult-history))
+  ;; Enable automatic preview at point in the *Completions* buffer. This is
+  ;; relevant when you use the default completion UI.
+  :hook (completion-list-mode . consult-preview-at-point-mode)
 
-(use-package counsel-projectile
-  :after projectile
-  :config (counsel-projectile-mode))
+  ;; The :init configuration is always executed (Not lazy)
+  :init
 
+  ;; Optionally configure the register formatting. This improves the register
+  ;; preview for `consult-register', `consult-register-load',
+  ;; `consult-register-store' and the Emacs built-ins.
+  (setq register-preview-delay 1.0
+        register-preview-function #'consult-register-format)
+
+  ;; Optionally tweak the register preview window.
+  ;; This adds thin lines, sorting and hides the mode line of the window.
+  (advice-add #'register-preview :override #'consult-register-window)
+
+  ;; Use Consult to select xref locations with preview
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref)
+)
 (use-package projectile
   :diminish projectile-mode
   :config (projectile-mode)
-  :custom ((projectile-completion-system 'ivy))
   :bind-keymap
   ("C-c p" . projectile-command-map)
   :init
@@ -203,14 +202,14 @@
   (setq projectile-switch-project-action #'projectile-dired))
 
 (use-package helpful
-  :commands (helpful-callable helpful-variable helpful-command helpful-key)
   :custom
   (counsel-describe-function-function #'helpful-callable)
   (counsel-describe-variable-function #'helpful-variable)
   :bind
-  ([remap describe-function] . counsel-describe-function)
+  ([remap describe-function] . helpful-function)
+  ([remap describe-symbol] . helpful-symbol)
+  ([remap describe-variable] . helpful-variable)
   ([remap describe-command] . helpful-command)
-  ([remap describe-variable] . counsel-describe-variable)
   ([remap describe-key] . helpful-key))
 
 (use-package general
@@ -223,7 +222,7 @@
     :global-prefix "C-SPC")
 
   (ka/leader-keys
-    "." 'counsel-find-file
+    "." 'find-file
     "b" '(:ignore t :which-key "Buffers")
     "bi" 'ibuffer
     "bk" 'kill-buffer
@@ -362,3 +361,7 @@
 (use-package cedet)
 (semantic-mode 1)
 
+(use-package magit-todos
+  :defer t)
+
+(use-package consult-lsp)
