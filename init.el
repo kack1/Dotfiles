@@ -1,5 +1,6 @@
 (setq inhibit-splash-screen t
       inhibit-startup-message t
+      use-file-dialog nil
       visible-bell t)
 
 (menu-bar-mode -1)
@@ -40,7 +41,6 @@
 
 ;; Save Mini-Buffer History
 (setq history-length 25)
-(savehist-mode 1)
 
 ;; Remember where we left!
 (save-place-mode 1)
@@ -84,8 +84,8 @@
   ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
   (doom-themes-org-config)
-(set-face-attribute 'default nil :font "JetBrains Mono-17")
-(set-face-attribute 'mode-line nil :font "JetBrains Mono-15"))
+(set-face-attribute 'default nil :font "JetBrains Mono-15")
+(set-face-attribute 'mode-line nil :font "JetBrains Mono-12"))
 
 (use-package doom-modeline
   :config
@@ -101,38 +101,106 @@
   :diminish which-key-mode
   :config
   (setq which-key-idle-delay 1.0))
-
-(use-package ivy
-  :diminish
-  :bind (("C-s" . swiper)
-         :map ivy-minibuffer-map
-         ("TAB" . ivy-alt-done)
-         ("C-l" . ivy-alt-done)
-         ("C-j" . ivy-next-line)
-         ("C-k" . ivy-previous-line)
-         :map ivy-switch-buffer-map
-         ("C-k" . ivy-previous-line)
-         ("C-l" . ivy-done)
-         ("C-d" . ivy-switch-buffer-kill)
-         :map ivy-reverse-i-search-map
-         ("C-k" . ivy-previous-line)
-         ("C-d" . ivy-reverse-i-search-kill))
-  :config
-  (ivy-mode 1))
-
-(use-package ivy-rich
-  :after ivy
+(use-package vertico
+  :ensure t
+  :custom
+  (vertico-cycle t)
   :init
-  (ivy-rich-mode 1))
+  (vertico-mode))
+
+;; Optionally use the `orderless' completion style.
+(use-package orderless
+  :init
+  ;; Configure a custom style dispatcher (see the Consult wiki)
+  ;; (setq orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch)
+  ;;       orderless-component-separator #'orderless-escapable-split-on-space)
+  (setq completion-styles '(orderless basic)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles partial-completion)))))
+
+(use-package savehist
+  :init
+  (savehist-mode))
+
+(use-package marginalia
+  :after vertico
+  :ensure t
+  :custom
+  (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light
+						       nil))
+  :init
+  (marginalia-mode))
+
+(use-package corfu
+  ;; Optional customizations
+   :custom
+   (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+   (corfu-auto t)                 ;; Enable auto completion
+   (corfu-auto-delay 0)
+   (corfu-auto-prefix 1)
+
+    (completion-styles '(orderless-fast basic))
+  ;; (corfu-separator ?\s)          ;; Orderless field separator
+  ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
+  ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
+  ;; (corfu-preview-current nil)    ;; Disable current candidate preview
+  ;; (corfu-preselect 'prompt)      ;; Preselect the prompt
+  ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
+  ;; (corfu-scroll-margin 5)        ;; Use scroll margin
+
+  ;; Enable Corfu only for certain modes.
+  ;; :hook ((prog-mode . corfu-mode)
+  ;;        (shell-mode . corfu-mode)
+  ;;        (eshell-mode . corfu-mode))
+
+  ;; Recommended: Enable Corfu globally.
+  ;; This is recommended since Dabbrev can be used globally (M-/).
+  ;; See also `corfu-exclude-modes'.
+  :init
+  (global-corfu-mode))
+(defun orderless-fast-dispatch (word index total)
+  (and (= index 0) (= total 1) (length< word 4)
+       `(orderless-regexp . ,(concat "^" (regexp-quote word)))))
+(orderless-define-completion-style orderless-fast
+(orderless-style-dispatchers '(orderless-fast-dispatch))
+(orderless-matching-styles '(orderless-literal orderless-regexp)))
+;; A few more useful configurations...
+(use-package emacs
+  :init
+  ;; TAB cycle if there are only few candidates
+  (setq completion-cycle-threshold 3)
+
+  ;; Emacs 28: Hide commands in M-x which do not apply to the current mode.
+  ;; Corfu commands are hidden, since they are not supposed to be used via M-x.
+  ;; (setq read-extended-command-predicate
+  ;;       #'command-completion-default-include-p)
+
+  ;; Enable indentation+completion using the TAB key.
+  ;; `completion-at-point' is often bound to M-TAB.
+  (setq tab-always-indent 'complete))
 
 (use-package counsel
  :bind (("M-x" . counsel-M-x)
 	 ("C-x b" . counsel-ibuffer)
 	 ("C-x C-f" . counsel-find-file)
 	 :map minibuffer-local-map
-	 ("C-r" . 'counsel-minibuffer-history))
-  :config
-  (setq ivy-initial-inputs-alist nil)) ;; Don't start searches with ^
+	 ("C-r" . 'counsel-minibuffer-history)))
+
+(use-package counsel-projectile
+  :after projectile
+  :config (counsel-projectile-mode))
+
+(use-package projectile
+  :diminish projectile-mode
+  :config (projectile-mode)
+  :custom ((projectile-completion-system 'ivy))
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :init
+  ;; NOTE: Set this to the folder where you keep your Git repos!
+  (when (file-directory-p "~/Desktop")
+    (setq projectile-project-search-path '("~/Desktop")))
+  (setq projectile-switch-project-action #'projectile-dired))
 
 (use-package helpful
   :commands (helpful-callable helpful-variable helpful-command helpful-key)
@@ -144,7 +212,6 @@
   ([remap describe-command] . helpful-command)
   ([remap describe-variable] . counsel-describe-variable)
   ([remap describe-key] . helpful-key))
-
 
 (use-package general
    :after evil
@@ -199,21 +266,6 @@
   :if (display-graphic-p)
   :hook (dired-mode . all-the-icons-dired-mode))
 
-(use-package projectile
-  :diminish projectile-mode
-  :config (projectile-mode)
-  :custom ((projectile-completion-system 'ivy))
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
-  :init
-  ;; NOTE: Set this to the folder where you keep your Git repos!
-  (when (file-directory-p "~/Desktop")
-    (setq projectile-project-search-path '("~/Desktop")))
-  (setq projectile-switch-project-action #'projectile-dired))
-
-(use-package counsel-projectile
-  :after projectile
-  :config (counsel-projectile-mode))
 
 (use-package magit
   :commands magit-status
@@ -302,32 +354,11 @@
 (require 'yasnippet)
 (yas-global-mode 1)
 
-
-;; Nix
-(use-package nix-mode
-  :mode "\\.nix\\'")
-
-(use-package cmake-ide)
-(use-package rtags)
-(require 'rtags) ;; optional, must have rtags installed
-(cmake-ide-setup)
-
-(use-package direnv
- :config
- (direnv-mode))
-
-(use-package irony
-  :config
-    (add-hook 'c++-mode-hook 'irony-mode)
-    (add-hook 'c-mode-hook 'irony-mode)
-    (add-hook 'objc-mode-hook 'irony-mode)
-    (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
-
-(use-package flycheck-irony
-  :config
-  (eval-after-load 'flycheck
-  '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup)))
-
-(use-package auctex)
 (use-package evil-tex)
+
+(use-package iedit)
+(use-package flymake-cursor)
+
+(use-package cedet)
+(semantic-mode 1)
 
