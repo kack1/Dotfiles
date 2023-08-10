@@ -338,8 +338,6 @@
   :custom
   (lsp-ui-doc-position 'bottom))
 
-(use-package lsp-ivy)
-
 (use-package ement)
 
 (use-package python-black
