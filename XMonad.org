@@ -90,7 +90,7 @@ myConfig = def
         , startupHook = myStartupHook
        }
         `additionalKeysP`
-        [ ("M-f", spawn "brave")
+        [ ("M-f", spawn "firefox")
           ,("M-e", spawn (myEmacs))
           , ("M-t", withFocused toggleFloat)
           , ("M-l", spawn (myKeepPass))
