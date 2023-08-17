@@ -124,23 +124,11 @@
    (corfu-auto-delay 0)
    (corfu-auto-prefix 1)
    (corfu-separator ?\s)          ;; Orderless field separator
-   (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
+   (corfu-quit-no-match t)
+   (corfu-popupinfo-delay 0.0)
+   (corfu-popupinfo-max-height 20)
    :init
   (global-corfu-mode))
-
-(use-package emacs
-  :init
-  ;; TAB cycle if there are only few candidates
-  (setq completion-cycle-threshold 3)
-
-  ;; Emacs 28: Hide commands in M-x which do not apply to the current mode.
-  ;; Corfu commands are hidden, since they are not supposed to be used via M-x.
-  ;; (setq read-extended-command-predicate
-  ;;       #'command-completion-default-include-p)
-
-  ;; Enable indentation+completion using the TAB key.
-  ;; `completion-at-point' is often bound to M-TAB.
-  (setq tab-always-indent 'complete))
 
 (use-package orderless
   :init
@@ -314,25 +302,6 @@
   :ensure t
   :hook (python-mode . lsp-deferred))
 
-(use-package pyvenv
-  :after python-mode
-  :config
-  (pyvenv-mode 1))
-; add below line to init.el
-(use-package company
-  :after lsp-mode
-  :hook (lsp-mode . company-mode)
-  :bind (:map company-active-map
-         ("<tab>" . company-complete-selection))
-        (:map lsp-mode-map
-         ("<tab>" . company-indent-or-complete-common))
-  :custom
-  (company-minimum-prefix-length 1)
-  (company-idle-delay 0.0))
-
-(use-package company-box
-  :hook (company-mode . company-box-mode))
-
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
   :custom
@@ -340,10 +309,8 @@
 
 (use-package ement)
 
-(use-package python-black
-  :demand t
-  :after python
-  :hook (python-mode . python-black-on-save-mode-enable-dwim))
+(use-package blacken
+  :hook ((python-mode . blacken-mode)))
 
 (use-package yasnippet-snippets)
 (add-to-list 'load-path
@@ -363,3 +330,14 @@
   :defer t)
 
 (use-package consult-lsp)
+
+(use-package all-the-icons-completion
+  :after (marginalia all-the-icons)
+  :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
+  :init
+  (all-the-icons-completion-mode))
+
+(use-package org-auto-tangle
+  :defer t
+  :hook (org-mode . org-auto-tangle-mode))
+
