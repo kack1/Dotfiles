@@ -65,8 +65,8 @@
   ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
   (doom-themes-org-config)
-(set-face-attribute 'default nil :font "JetBrains Mono-15")
-(set-face-attribute 'mode-line nil :font "JetBrains Mono-12"))
+(set-face-attribute 'default nil :font "JetBrains Mono-16")
+(set-face-attribute 'mode-line nil :font "JetBrains Mono-15"))
 
 (use-package doom-modeline
   :config
@@ -128,13 +128,6 @@
    :init
   (global-corfu-mode))
 
-(defun orderless-fast-dispatch (word index total)
-  (and (= index 0) (= total 1) (length< word 4)
-       `(orderless-regexp . ,(concat "^" (regexp-quote word)))))
-(orderless-define-completion-style orderless-fast
-(orderless-style-dispatchers '(orderless-fast-dispatch))
-(orderless-matching-styles '(orderless-literal orderless-regexp)))
-;; A few more useful configurations...
 (use-package emacs
   :init
   ;; TAB cycle if there are only few candidates
@@ -157,6 +150,14 @@
   (setq completion-styles '(orderless-fast basic)
         completion-category-defaults nil
         completion-category-overrides '((file (styles partial-completion)))))
+
+(defun orderless-fast-dispatch (word index total)
+  (and (= index 0) (= total 1) (length< word 4)
+       `(orderless-regexp . ,(concat "^" (regexp-quote word)))))
+
+(orderless-define-completion-style orderless-fast
+  (orderless-style-dispatchers '(orderless-fast-dispatch))
+  (orderless-matching-styles '(orderless-literal orderless-regexp)));; A few more useful configurations...
 ;; Example configuration for Consult
 (use-package consult
   ;; Replace bindings. Lazily loaded due by `use-package'.
@@ -192,6 +193,8 @@
   :config (projectile-mode)
   :bind-keymap
   ("C-c p" . projectile-command-map)
+  :bind
+  ([remap projectile-ripgrep] . consult-ripgrep)
   :init
   ;; NOTE: Set this to the folder where you keep your Git repos!
   (when (file-directory-p "~/Desktop")
