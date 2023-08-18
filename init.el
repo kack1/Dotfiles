@@ -60,6 +60,19 @@
 (use-package dracula-theme
   :init
   (load-theme 'dracula t)
+  ;; Don't change the font size for some headings and titles (default t)
+  (setq dracula-enlarge-headings nil)
+  ;; Adjust font size of titles level 1 (default 1.3)
+  (setq dracula-height-title-1 1.25)
+  ;; Adjust font size of titles level 2 (default 1.1)
+  (setq dracula-height-title-1 1.15)
+  ;; Adjust font size of titles level 3 (default 1.0)
+  (setq dracula-height-title-1 1.05)
+  ;; Adjust font size of document titles (default 1.44)
+  (setq dracula-height-doc-title 1.4)
+  
+  ;; Use less pink and bold on the mode-line and minibuffer (default nil)
+  (setq dracula-alternate-mode-line-and-minibuffer t)
   (set-face-attribute 'default nil :font "JetBrains Mono-15")
   (set-face-attribute 'mode-line nil :font "JetBrains Mono-14"))
 
@@ -71,15 +84,13 @@
     '((t (:background "#bd93f9" :inherit telephone-line-evil)))
     "Face used in evil color-coded segments when in Normal state."
     :group 'telephone-line-evil)
-    (setq telephone-line-primary-left-separator 'telephone-line-cubed-left
-	  telephone-line-secondary-left-separator 'telephone-line-cubed-hollow-left
-	  telephone-line-primary-right-separator 'telephone-line-cubed-right
-	  telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-right
-          telephone-line-height 24
-	  telephone-line-evil-use-short-tag t)
-
-    (telephone-line-mode 1))
-	
+  (setq telephone-line-primary-left-separator 'telephone-line-cubed-left
+        telephone-line-secondary-left-separator 'telephone-line-cubed-hollow-left
+        telephone-line-primary-right-separator 'telephone-line-cubed-left
+	telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-left
+        telephone-line-height 25
+        telephone-line-evil-use-short-tag t)
+  (telephone-line-mode 1))
 
 ;; Rainbow Delimiters
 (use-package rainbow-delimiters
@@ -224,7 +235,7 @@
     "bi" 'ibuffer
     "bk" 'kill-buffer
     "fs" 'save-buffer
-    "fde" '(lambda () (interactive) (find-file (expand-file-name "~/.emacs.d/init.el")))))
+    "fde" '(lambda () (interactive) (find-file (expand-file-name "~/.dotfiles/init.el")))))
 
 (use-package evil
   :init
