@@ -57,20 +57,29 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
-(use-package doom-themes
-  :config
-  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-        doom-themes-enable-italic t)
-  (load-theme 'doom-dracula t)
-  ;; Enable flashing mode-line on errors
-  (doom-themes-visual-bell-config)
-  (doom-themes-org-config)
-(set-face-attribute 'default nil :font "JetBrains Mono-16")
-(set-face-attribute 'mode-line nil :font "JetBrains Mono-15"))
+(use-package dracula-theme
+  :init
+  (load-theme 'dracula t)
+  (set-face-attribute 'default nil :font "JetBrains Mono-15")
+  (set-face-attribute 'mode-line nil :font "JetBrains Mono-14"))
 
-(use-package doom-modeline
-  :config
-  (doom-modeline-mode 1))
+;; telephone-line
+;; A new implementation of Powerline for Emacs
+(use-package telephone-line
+  :init
+  (defface telephone-line-evil-normal
+    '((t (:background "#bd93f9" :inherit telephone-line-evil)))
+    "Face used in evil color-coded segments when in Normal state."
+    :group 'telephone-line-evil)
+    (setq telephone-line-primary-left-separator 'telephone-line-cubed-left
+	  telephone-line-secondary-left-separator 'telephone-line-cubed-hollow-left
+	  telephone-line-primary-right-separator 'telephone-line-cubed-right
+	  telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-right
+          telephone-line-height 24
+	  telephone-line-evil-use-short-tag t)
+
+    (telephone-line-mode 1))
+	
 
 ;; Rainbow Delimiters
 (use-package rainbow-delimiters
@@ -215,9 +224,7 @@
     "bi" 'ibuffer
     "bk" 'kill-buffer
     "fs" 'save-buffer
-    "t"  '(:ignore t :which-key "toggles")
-    "tt" '(counsel-load-theme :which-key "choose theme")
-    "fde" '(lambda () (interactive) (find-file (expand-file-name "~/.emacs.d/Emacs.org")))))
+    "fde" '(lambda () (interactive) (find-file (expand-file-name "~/.emacs.d/init.el")))))
 
 (use-package evil
   :init
@@ -250,8 +257,15 @@
     (all-the-icons-install-fonts t)))
 
 (use-package all-the-icons-dired
+  :after all-the-icons
   :if (display-graphic-p)
   :hook (dired-mode . all-the-icons-dired-mode))
+
+(use-package all-the-icons-completion
+  :after (marginalia all-the-icons)
+  :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
+  :init
+  (all-the-icons-completion-mode))
 
 
 (use-package magit
@@ -331,11 +345,6 @@
 
 (use-package consult-lsp)
 
-(use-package all-the-icons-completion
-  :after (marginalia all-the-icons)
-  :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
-  :init
-  (all-the-icons-completion-mode))
 
 (use-package org-auto-tangle
   :defer t
