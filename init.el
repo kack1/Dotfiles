@@ -23,6 +23,7 @@
 ;; Save Mini-Buffer History
 (setq history-length 25)
 
+(put 'narrow-to-region 'disabled nil)
 ;; Remember where we left!
 (save-place-mode 1)
 ;; Disable Line numbers for some modes
