@@ -386,3 +386,8 @@
   ;; Enables ligature checks globally in all buffers. You can also do it
   ;; per mode with `ligature-mode'.
   (global-ligature-mode t))
+
+
+;; Balanced Parenthsis, Brackets, etc...
+(electric-pair-mode 1)
+(setq electric-pair-preserve-balance nil)
