@@ -1,6 +1,7 @@
 (setq inhibit-splash-screen t
       inhibit-startup-message t
       use-file-dialog nil
+      split-width-threshold 1
       visible-bell t)
 
 (menu-bar-mode -1)
