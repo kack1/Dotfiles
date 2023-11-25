@@ -392,6 +392,7 @@
 
 
 (all-the-icons-completion-mode)
-
+(setq c-default-style "bsd"
+      c-basic-offset 8)
 (provide 'init.el)
 ;;; init.el ends here
