@@ -56,6 +56,34 @@
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
 
+;; Place to put local packages.
+(let* ((path (expand-file-name "lisp" user-emacs-directory))
+	(local-pkgs (mapcar 'file-name-directory (directory-files-recursively path "\\.el$"))))
+(if (file-accessible-directory-p path)
+    (mapc (apply-partially 'add-to-list 'load-path) local-pkgs)
+    (make-directory path :parents)))
+
+
+(require 'lambda-line)
+(setq lambda-line-clockface-update-fontset "ClockFaceRect") ;; set clock icon
+(setq lambda-line-position 'bottom) ;; Set position of status-line
+(setq lambda-line-abbrev t) ;; abbreviate major modes
+(setq lambda-line-hspace "  ")  ;; add some cushion
+(setq lambda-line-prefix t) ;; use a prefix symbol
+(setq lambda-line-prefix-padding nil) ;; no extra space for prefix 
+(setq lambda-line-status-invert nil)  ;; no invert colors
+(setq lambda-line-gui-ro-symbol  " ⨂") ;; symbols
+(setq lambda-line-gui-mod-symbol " ⬤") 
+(setq lambda-line-gui-rw-symbol  " ◯") 
+(setq lambda-line-space-top +.20)  ;; padding on top and bottom of line
+(setq lambda-line-space-bottom -.20)
+(setq lambda-line-symbol-position 0.1) ;; adjust the vertical placement of symbol
+;; activate lambda-line 
+(lambda-line-mode) 
+;; set divider line in footer
+(when (eq lambda-line-position 'top)
+(setq-default mode-line-format (list "%_"))
+(setq mode-line-format (list "%_")))
 (require 'use-package)
 (setq use-package-always-ensure t)
 
@@ -75,24 +103,7 @@
   
   ;; Use less pink and bold on the mode-line and minibuffer (default nil)
   (setq dracula-alternate-mode-line-and-minibuffer t)
-  (set-face-attribute 'default nil :font "JetBrains Mono-15")
-  (set-face-attribute 'mode-line nil :font "JetBrains Mono-14"))
-
-;; telephone-line
-;; A new implementation of Powerline for Emacs
-(use-package telephone-line
-  :init
-  (defface telephone-line-evil-normal
-    '((t (:background "#bd93f9" :inherit telephone-line-evil)))
-    "Face used in evil color-coded segments when in Normal state."
-    :group 'telephone-line-evil)
-  (setq telephone-line-primary-left-separator 'telephone-line-cubed-left
-        telephone-line-secondary-left-separator 'telephone-line-cubed-hollow-left
-        telephone-line-primary-right-separator 'telephone-line-cubed-left
-	telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-left
-        telephone-line-height 25
-        telephone-line-evil-use-short-tag t)
-  (telephone-line-mode 1))
+  )
 
 ;; Rainbow Delimiters
 (use-package rainbow-delimiters
@@ -352,47 +363,22 @@
 
 (use-package consult-lsp)
 
-
 (use-package org-auto-tangle
   :defer t
   :hook (org-mode . org-auto-tangle-mode))
 
 ;; Balanced Parenthsis, Brackets, etc...
 (electric-pair-mode 1)
-(setq electric-pair-preserve-balance nil)
-
-(use-package citre
-  :defer t
-  :init
-  ;; This is needed in `:init' block for lazy load to work.
-  (require 'citre-config)
-  ;; Bind your frequently used commands.  Alternatively, you can define them
-  ;; in `citre-mode-map' so you can only use them when `citre-mode' is enabled.
-  (global-set-key (kbd "C-x c j") 'citre-jump)
-  (global-set-key (kbd "C-x c J") 'citre-jump-back)
-  (global-set-key (kbd "C-x c p") 'citre-ace-peek)
-  (global-set-key (kbd "C-x c u") 'citre-update-this-tags-file)
-  :config
-  (setq
-   ;; Set these if readtags/ctags is not in your PATH.
-   citre-readtags-program "/usr/local/bin/ureadtags"
-   citre-ctags-program "/usr/local/bin/uctags"
-   ;; Set this if you use project management plugin like projectile.  It's
-   ;; used for things like displaying paths relatively, see its docstring.
-   citre-project-root-function #'projectile-project-root
-   ;; Set this if you want to always use one location to create a tags file.
-   citre-default-create-tags-file-location 'global-cache
-   ;; See the "Create tags file" section above to know these options
-   citre-use-project-root-when-creating-tags t
-   citre-prompt-language-for-ctags-command t
-   ;; By default, when you open any file, and a tags file can be found for it,
-   ;; `citre-mode' is automatically enabled.  If you only want this to work for
-   ;; certain modes (like `prog-mode'), set it like this.
-   citre-auto-enable-citre-mode-modes '(prog-mode)))
-
 
 (all-the-icons-completion-mode)
 (setq c-default-style "bsd"
       c-basic-offset 8)
 (provide 'init.el)
 ;;; init.el ends here
+
+;; Got
+(use-package vc-got
+  :config
+  (setq vc-got-program "~/bin/got"))
+
+
