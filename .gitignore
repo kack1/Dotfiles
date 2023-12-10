@@ -1,3 +1,5 @@
+.gnus.el
+xmonad.hs
 /.dir-locals.el
 /#.dir-locals.el#
 /init.el~
