@@ -87,23 +87,7 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
-(use-package dracula-theme
-  :init
-  (load-theme 'dracula t)
-  ;; Don't change the font size for some headings and titles (default t)
-  (setq dracula-enlarge-headings nil)
-  ;; Adjust font size of titles level 1 (default 1.3)
-  (setq dracula-height-title-1 1.25)
-  ;; Adjust font size of titles level 2 (default 1.1)
-  (setq dracula-height-title-1 1.15)
-  ;; Adjust font size of titles level 3 (default 1.0)
-  (setq dracula-height-title-1 1.05)
-  ;; Adjust font size of document titles (default 1.44)
-  (setq dracula-height-doc-title 1.4)
-  
-  ;; Use less pink and bold on the mode-line and minibuffer (default nil)
-  (setq dracula-alternate-mode-line-and-minibuffer t)
-  )
+(load-theme 'leuven-dark)
 
 ;; Rainbow Delimiters
 (use-package rainbow-delimiters
