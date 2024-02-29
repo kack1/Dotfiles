@@ -1,9 +1,9 @@
-(setq native-comp-jit-compilation nil)
 (setq inhibit-splash-screen t
       inhibit-startup-message t
       use-file-dialog nil
       split-width-threshold 1
       visible-bell t)
+(setq native-comp-speed -1)
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
@@ -41,7 +41,6 @@
 (load custom-file 'noerror 'nomessage)
 ;; Refresh Dired
 
-
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
 			 ("org" . "https://orgmode.org/elpa/")
 			 ("epla" . "https://elpa.gnu.org/packages/")))
@@ -63,27 +62,6 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-(use-package lambda-line
-  :straight (el-patch :type git :host github :repo "Lambda-Emacs/lambda-line")
-  :custom
-    (setq lambda-line-clockface-update-fontset "ClockFaceRect") ;; set clock icon
-    (setq lambda-line-position 'bottom) ;; Set position of status-line
-    (setq lambda-line-abbrev t) ;; abbreviate major modes
-    (setq lambda-line-hspace "  ")  ;; add some cushion
-    (setq lambda-line-prefix t) ;; use a prefix symbol
-    (setq lambda-line-status-invert nil)  ;; no invert colors
-    (setq lambda-line-gui-ro-symbol  " ⨂") ;; symbols
-    (setq lambda-line-gui-rw-symbol  " ◯")
-    (setq lambda-line-space-top +.20)  ;; padding on top and bottom of line
-    (setq lambda-line-space-bottom -.20)
-    (setq lambda-line-symbol-position 0.1) ;; adjust the vertical placement of symbol
-    (when (eq lambda-line-position 'top)
-    (setq-default mode-line-format (list "%_"))
-    (setq mode-line-format (list "%_")))
-  :init
-    ;; activate lambda-line
-    (lambda-line-mode)
-  )
 
 (load-theme 'leuven-dark)
 
@@ -101,23 +79,12 @@
   (setq which-key-idle-delay 1.0))
 
 (use-package vertico
+  :straight t
   :custom
   (vertico-cycle t)
   :init
   (vertico-mode)
   )
-
-;; Configure directory extension.
-(use-package vertico-directory
-  :after vertico
-  :ensure nil
-  ;; More convenient directory navigation commands
-  :bind (:map vertico-map
-              ("RET" . vertico-directory-enter)
-              ("DEL" . vertico-directory-delete-char)
-              ("M-DEL" . vertico-directory-delete-word))
-  ;; Tidy shadowed file names
-  :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
 
 (use-package savehist
   :straight t
@@ -126,6 +93,7 @@
 
 (use-package marginalia
   :after vertico
+  :straight t
   :ensure t
   :custom
   (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light
@@ -158,7 +126,7 @@
          ("C-M-j" . persp-switch-to-buffer*)
          :map minibuffer-local-map
          ("C-r" . consult-history))
-  ;;:hook (completion-list-mode . consult-preview-at-point-mode)
+  :hook (completion-list-mode . consult-preview-at-point-mode)
   :init
   (setq register-preview-delay 1.0
         register-preview-function #'consult-register-format)
@@ -259,6 +227,27 @@
   :init
   (all-the-icons-completion-mode))
 
+(use-package lambda-line
+  :straight (el-patch :type git :host github :repo "Lambda-Emacs/lambda-line")
+  :custom
+    (setq lambda-line-clockface-update-fontset "ClockFaceRect") ;; set clock icon
+    (setq lambda-line-position 'bottom) ;; Set position of status-line
+    (setq lambda-line-abbrev t) ;; abbreviate major modes
+    (setq lambda-line-hspace "  ")  ;; add some cushion
+    (setq lambda-line-prefix t) ;; use a prefix symbol
+    (setq lambda-line-status-invert nil)  ;; no invert colors
+    (setq lambda-line-gui-ro-symbol  " ⨂") ;; symbols
+    (setq lambda-line-gui-rw-symbol  " ◯")
+    (setq lambda-line-space-top +.20)  ;; padding on top and bottom of line
+    (setq lambda-line-space-bottom -.20)
+    (setq lambda-line-symbol-position 0.1) ;; adjust the vertical placement of symbol
+    (when (eq lambda-line-position 'top)
+    (setq-default mode-line-format (list "%_"))
+    (setq mode-line-format (list "%_")))
+  :init
+    ;; activate lambda-line
+    (lambda-line-mode)
+  )
 
 (use-package magit
   :straight t
@@ -303,8 +292,8 @@
   (lsp-enable-which-key-integration t))
 
 ;; (use-package python-mode
-;;   :ensure t
-;;   :hook (python-mode . lsp-deferred))
+;;    :ensure t
+;;    :hook (python-mode . lsp-deferred))
 
 (use-package lsp-ui
   :straight t
@@ -312,15 +301,16 @@
   :custom
   (lsp-ui-doc-position 'bottom))
 
-(use-package ement)
+(straight-use-package 'ement)
 
 (use-package blacken
   :straight t
   :hook ((python-mode . blacken-mode)))
 
-(use-package yasnippet-snippets)
+(straight-use-package 'yasnippet-snippets)
 (add-to-list 'load-path
               "~/.emacs.d/plugins/yasnippet")
+
 (require 'yasnippet)
 (yas-global-mode 1)
 
@@ -334,7 +324,7 @@
 (use-package magit-todos
   :defer t)
 
-(use-package consult-lsp)
+(straight-use-package 'consult-lsp)
 
 (use-package org-auto-tangle
   :defer t
@@ -344,6 +334,7 @@
 (electric-pair-mode 1)
 
 (all-the-icons-completion-mode)
+
 (setq c-default-style "bsd"
       c-basic-offset 8)
 
@@ -362,6 +353,7 @@
     ((debug error) (signal (car e) (cdr e)))))
 
 (advice-add #'vertico--exhibit :around #'force-debug)
+
 (provide 'init.el)
 ;;; init.el ends here
 
