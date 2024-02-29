@@ -3,7 +3,6 @@
       use-file-dialog nil
       split-width-threshold 1
       visible-bell t)
-(setq native-comp-speed -1)
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
@@ -14,6 +13,10 @@
 (global-display-line-numbers-mode 1)
 ;; Relative Line numbers
 (setq display-line-numbers 'relative)
+
+;; C prefs
+(setq c-default-style "bsd"
+      c-basic-offset 8)
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 (add-to-list 'image-types 'svg)
@@ -335,24 +338,12 @@
 
 (all-the-icons-completion-mode)
 
-(setq c-default-style "bsd"
-      c-basic-offset 8)
 
 ;; Got
 (use-package vc-got
   :straight t
   :config
   (setq vc-got-program "~/bin/got"))
-
-(setq debug-on-error t)
-
-
-(defun force-debug (func &rest args)
-  (condition-case e
-      (apply func args)
-    ((debug error) (signal (car e) (cdr e)))))
-
-(advice-add #'vertico--exhibit :around #'force-debug)
 
 (provide 'init.el)
 ;;; init.el ends here
