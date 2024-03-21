@@ -4,6 +4,7 @@
       split-width-threshold 1
       visible-bell t)
 
+
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
@@ -83,11 +84,21 @@
 
 (use-package vertico
   :straight t
+  :hook ((rfn-eshadow-update-overlay . vertico-directory-tidy) ; Clean up file path when typing
+         (minibuffer-setup . vertico-repeat-save) ; Make sure vertico state is saved
+         )
   :custom
-  (vertico-cycle t)
-  :init
-  (vertico-mode)
-  )
+  (vertico-count 13)                    ; Number of candidates to display
+  (vertico-resize t)
+  (vertico-cycle nil) ; Go from last to first candidate and first to last (cycle)?
+  (:keymaps 'vertico-map
+   "<tab>" #'vertico-insert  ; Insert selected candidate into text area
+   "<escape>" #'minibuffer-keyboard-quit ; Close minibuffer
+   ;; NOTE 2022-02-05: Cycle through candidate groups
+   "C-M-n" #'vertico-next-group
+   "C-M-p" #'vertico-previous-group)
+  :config
+  (vertico-mode))
 
 (use-package savehist
   :straight t
@@ -109,7 +120,7 @@
   ;; Optional customizations
    :custom
    (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
-   (corfu-auto t)                 ;; Enable auto completion
+   ;; (corfu-auto t)                 ;; Enable auto completion
    (corfu-auto-delay 0)
    (corfu-auto-prefix 1)
    (corfu-separator ?\s)          ;; Orderless field separator
@@ -121,21 +132,81 @@
 
 (use-package orderless
   :straight t
+  :custom
+  (completion-styles '(orderless))
+  (completion-category-defaults nil)    ; I want to be in control!
+  (completion-category-overrides
+   '((file (styles basic ; For `tramp' hostname completion with `vertico'
+                   orderless
+                   ))
+     ))
+
+  (orderless-component-separator 'orderless-escapable-split-on-space)
+  (orderless-matching-styles
+   '(orderless-literal
+     orderless-prefixes
+     orderless-initialism
+     orderless-regexp
+     ;; orderless-flex
+     ;; orderless-strict-leading-initialism
+     ;; orderless-strict-initialism
+     ;; orderless-strict-full-initialism
+     ;; orderless-without-literal          ; Recommended for dispatches instead
+     ))
+  (orderless-style-dispatchers
+   '(prot-orderless-literal-dispatcher
+     prot-orderless-strict-initialism-dispatcher
+     prot-orderless-flex-dispatcher
+     ))
   :init
-  ;; Configure a custom style dispatcher (see the Consult wiki)
-  ;; (setq orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch)
-  ;;       orderless-component-separator #'orderless-escapable-split-on-space)
-  (setq completion-styles '(orderless-fast orderless basic)
-        completion-category-defaults nil
-        completion-category-overrides '((file (styles partial-completion)))))
+  (defun orderless--strict-*-initialism (component &optional anchored)
+    "Match a COMPONENT as a strict initialism, optionally ANCHORED.
+The characters in COMPONENT must occur in the candidate in that
+order at the beginning of subsequent words comprised of letters.
+Only non-letters can be in between the words that start with the
+initials.
 
-(defun orderless-fast-dispatch (word index total)
-  (and (= index 0) (= total 1) (length< word 4)
-       `(orderless-regexp . ,(concat "^" (regexp-quote word)))))
+If ANCHORED is `start' require that the first initial appear in
+the first word of the candidate.  If ANCHORED is `both' require
+that the first and last initials appear in the first and last
+words of the candidate, respectively."
+    (orderless--separated-by
+        '(seq (zero-or-more alpha) word-end (zero-or-more (not alpha)))
+      (cl-loop for char across component collect `(seq word-start ,char))
+      (when anchored '(seq (group buffer-start) (zero-or-more (not alpha))))
+      (when (eq anchored 'both)
+        '(seq (zero-or-more alpha) word-end (zero-or-more (not alpha)) eol))))
 
-(orderless-define-completion-style orderless-fast
-  (orderless-style-dispatchers '(orderless-fast-dispatch))
-  (orderless-matching-styles '(orderless-literal orderless-regexp)));; A few more useful configurations...
+  (defun orderless-strict-initialism (component)
+    "Match a COMPONENT as a strict initialism.
+This means the characters in COMPONENT must occur in the
+candidate in that order at the beginning of subsequent words
+comprised of letters.  Only non-letters can be in between the
+words that start with the initials."
+    (orderless--strict-*-initialism component))
+
+  (defun prot-orderless-literal-dispatcher (pattern _index _total)
+    "Literal style dispatcher using the equals sign as a suffix.
+It matches PATTERN _INDEX and _TOTAL according to how Orderless
+parses its input."
+    (when (string-suffix-p "=" pattern)
+      `(orderless-literal . ,(substring pattern 0 -1))))
+
+  (defun prot-orderless-strict-initialism-dispatcher (pattern _index _total)
+    "Leading initialism  dispatcher using the comma suffix.
+It matches PATTERN _INDEX and _TOTAL according to how Orderless
+parses its input."
+    (when (string-suffix-p "," pattern)
+      `(orderless-strict-initialism . ,(substring pattern 0 -1))))
+
+  (defun prot-orderless-flex-dispatcher (pattern _index _total)
+    "Flex  dispatcher using the tilde suffix.
+It matches PATTERN _INDEX and _TOTAL according to how Orderless
+parses its input."
+    (when (string-suffix-p "." pattern)
+      `(orderless-flex . ,(substring pattern 0 -1))))
+  )
+
 ;; ;; Example configuration for Consult
 (use-package consult
   :straight t
@@ -146,7 +217,6 @@
          ("C-M-j" . persp-switch-to-buffer*)
          :map minibuffer-local-map
          ("C-r" . consult-history))
-  :hook (completion-list-mode . consult-preview-at-point-mode)
   :init
   (setq register-preview-delay 1.0
         register-preview-function #'consult-register-format)
@@ -353,14 +423,12 @@
 ;; Balanced Parenthsis, Brackets, etc...
 (electric-pair-mode 1)
 
-(all-the-icons-completion-mode)
-
-
 ;; Got
 (use-package vc-got
   :straight t
   :config
   (setq vc-got-program "~/bin/got"))
+(setq debug-on-error t)
 
 (provide 'init.el)
 ;;; init.el ends here
