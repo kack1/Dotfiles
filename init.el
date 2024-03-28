@@ -271,30 +271,6 @@ parses its input."
     "fs" 'save-buffer
     "fde" '(lambda () (interactive) (find-file (expand-file-name "~/.dotfiles/init.el")))))
 
-(use-package evil
-  :straight t
-  :init
-  (setq evil-want-integration t)
-  (setq evil-want-keybinding nil)
-  (setq evil-want-C-u-scroll t)
-  (setq evil-want-C-i-jump nil)
-  :config
-  (evil-mode 1)
-  (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
-  (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
-
-  ;; Use visual line motions even outside of visual-line-mode buffers
-  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
-  (evil-set-initial-state 'messages-buffer-mode 'normal)
-  (evil-set-initial-state 'dashboard-mode 'normal))
-
-(use-package evil-collection
-  :straight t
-  :after evil
-  :config
-  (evil-collection-init))
-
 (use-package all-the-icons
   :straight t
   :if (display-graphic-p)
@@ -422,6 +398,15 @@ parses its input."
 
 ;; Balanced Parenthsis, Brackets, etc...
 (electric-pair-mode 1)
+
+(all-the-icons-completion-mode)
+
+(straight-use-package 'god-mode)
+(global-set-key (kbd "<escape>") #'god-mode-all)
+(global-set-key (kbd "C-x C-1") #'delete-other-windows)
+(global-set-key (kbd "C-x C-2") #'split-window-below)
+(global-set-key (kbd "C-x C-3") #'split-window-right)
+(global-set-key (kbd "C-x C-0") #'delete-window)
 
 ;; Got
 (use-package vc-got
