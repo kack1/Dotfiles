@@ -408,6 +408,14 @@ parses its input."
 (global-set-key (kbd "C-x C-3") #'split-window-right)
 (global-set-key (kbd "C-x C-0") #'delete-window)
 
+(use-package slime
+  :straight t
+  :config
+  (setq inferior-lisp-program "/usr/local/bin/sbcl")
+  (slime-setup '(slime-fancy slime-asdf slime-banner))
+  (setq slime-complete-symbol*-fancy t)
+  (setq uslme-complete-symbol-function 'slime-fuzzy-complete-symbol))
+
 ;; Got
 (use-package vc-got
   :straight t
