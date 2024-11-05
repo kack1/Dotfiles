@@ -328,7 +328,15 @@ parses its input."
 (use-package org
   :straight t
   :config
-  (setq org-ellipsis " ▾"))
+  (setq org-ellipsis " ▾")
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . nil)
+     (lisp . t)
+     (python . t)
+     (lisp . t)))
+  (setq org-babel-python-command "python3")
+  (setq org-confirm-babel-evaluate nil))
 
 (use-package org-bullets
   :straight t
