@@ -466,6 +466,12 @@ parses its input."
           org-roam-ui-update-on-save t
           org-roam-ui-open-on-start t))
 
+
+(use-package ledger-mode
+  :straight t
+  :config
+  (setq ledger-binary-path "/usr/local/bin/ledger")
+  ) 
 (provide 'init.el)
 ;;; init.el ends here
 
